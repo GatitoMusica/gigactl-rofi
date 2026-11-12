@@ -5,9 +5,11 @@
 `gigactl-rofi` is designed as a lightweight graphical frontend for the
 existing `gfan` and `gkbd` command-line utilities.
 
-The application will use Rofi Script Mode for menu presentation and
-navigation. Bash will handle application flow, configuration and the
-invocation of external commands.
+The application will use Rofi dmenu mode for menu presentation and
+navigation. Each screen is a separate Rofi invocation launched by Bash.
+Bash handles application flow, configuration and the invocation of
+external commands. Escape from a submenu returns to the main menu;
+Escape from the main menu exits the application.
 
 The project will not implement the laptop's Embedded Controller protocol.
 
@@ -136,7 +138,7 @@ attempting to use them.
 
 ## Rofi interaction model
 
-The intended interface uses Rofi Script Mode.
+The intended interface uses Rofi dmenu mode.
 
 The application will separate:
 

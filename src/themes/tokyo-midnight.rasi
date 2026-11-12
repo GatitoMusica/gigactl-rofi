@@ -1,0 +1,65 @@
+/*
+ * GigaControl - Tokyo Midnight
+ * Initial interface theme
+ */
+
+* {
+    foreground: #c0caf5;
+    background: #1a1b26;
+    background-alt: #24283b;
+    selected: #7aa2f7;
+    accent: #bb9af7;
+    muted: #565f89;
+    border-color: #414868;
+}
+
+window {
+    width: 560px;
+    padding: 18px;
+    border: 2px;
+    border-radius: 12px;
+    border-color: @border-color;
+    background-color: @background;
+    font: "Sans 11";
+}
+
+mainbox {
+    children: [ message, listview ];
+    spacing: 12px;
+    background-color: transparent;
+}
+
+message {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: @background-alt;
+}
+
+textbox {
+    text-color: @muted;
+}
+
+listview {
+    lines: 7;
+    columns: 1;
+    fixed-height: false;
+    spacing: 6px;
+    background-color: transparent;
+}
+
+element {
+    padding: 10px 12px;
+    border-radius: 7px;
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+element selected {
+    background-color: @selected;
+    text-color: @background;
+}
+
+element-text {
+    background-color: inherit;
+    text-color: inherit;
+}
