@@ -1,0 +1,31 @@
+# Editor files
+*~
+*.swp
+*.swo
+*.bak
+.vscode/
+.idea/
+
+# Temporary files and logs
+*.tmp
+*.log
+*.pid
+.cache/
+
+# Build and test artifacts
+build/
+dist/
+coverage/
+__pycache__/
+*.pyc
+
+# Local environment and private configuration
+.env
+.env.*
+!.env.example
+config/local.conf
+config/settings.local.conf
+
+# OS files
+.DS_Store
+Thumbs.db
