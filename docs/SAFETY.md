@@ -2,8 +2,12 @@
 
 ## Purpose
 
-`gigactl-rofi` provides a graphical interface for utilities that can
-modify laptop fan behavior and keyboard backlighting.
+GigaControl is a native KDE Plasma 6 widget that provides an
+interface for monitoring and controlling laptop fans and
+keyboard backlighting.
+
+The application interacts with existing hardware utilities
+without implementing its own Embedded Controller (EC) protocol.
 
 The project must prioritize safe hardware interaction over convenience.
 
@@ -81,27 +85,40 @@ errors when appropriate.
 
 ## Permissions and privileges
 
-The frontend must not attempt to implement its own privileged EC access.
+The application must never:
 
-It must invoke the original utilities normally and allow them to
-handle their own daemon communication, permissions and privilege
-requirements.
+- Embed administrator passwords.
+- Request or store passwords inside the Plasmoid.
+- Silently invoke privileged operations.
+- Attempt to bypass system authorization mechanisms.
 
-Do not embed passwords, request passwords through Rofi or execute
-arbitrary commands with elevated privileges.
+Hardware utilities must handle their own privilege requirements.
 
-## Shell command safety
+Any authorization mechanism introduced by GigaControl must
+be explicitly documented and designed with least privilege.
 
-All external commands must be invoked with validated arguments.
+Development-machine permissions must not be assumed to exist
+on other installations.
+
+Local sudoers rules must never be distributed as general
+installation configuration.
+
+## Command execution safety
+
+All hardware commands must be executed through a controlled
+command execution layer.
 
 The application must:
 
-- Avoid `eval`.
-- Avoid constructing executable shell strings from user input.
-- Quote variables correctly.
-- Validate numeric and hexadecimal values.
-- Keep command names fixed.
-- Avoid passing arbitrary user-provided text as command arguments.
+- Use fixed executable paths or validated executable discovery.
+- Accept only explicitly supported commands.
+- Validate every argument before execution.
+- Never evaluate arbitrary shell expressions.
+- Never construct executable commands from untrusted user input.
+- Avoid passing unrestricted user input to external utilities.
+- Handle command output and exit status independently.
+- Prevent overlapping hardware operations where necessary.
+- Apply timeouts to operations that could otherwise remain blocked.
 
 ## Error handling
 
@@ -145,6 +162,21 @@ For RGB controls, test individual operations and verify that the
 result matches the requested state.
 
 Do not combine several unverified hardware operations into one test.
+
+### Plasmoid interface tests
+
+Test the native KDE Plasma widget independently from hardware.
+
+Verify:
+
+- Widget installation and removal.
+- Panel icon visibility.
+- Popup opening and closing.
+- Navigation between application sections.
+- Behavior when the popup loses focus.
+- Correct handling of unavailable hardware utilities.
+
+These tests must not modify hardware state.
 
 ### Regression tests
 

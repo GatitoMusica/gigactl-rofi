@@ -1,150 +1,166 @@
-# gigactl-rofi
+# GigaControl
 
-A lightweight Rofi interface for managing fan control and RGB keyboard
-backlighting on supported Gigabyte G-series laptops running Linux.
+A native KDE Plasma 6 widget for monitoring and managing fan
+performance and RGB keyboard backlighting on supported
+Gigabyte laptops.
 
-`gigactl-rofi` is an independent companion project for
-[`smairio/gigactl`](https://github.com/smairio/gigactl).
+GigaControl provides a compact, permanently accessible interface
+through the KDE Plasma panel.
 
-It aims to provide an accessible graphical menu on top of the existing
-`gfan` and `gkbd` command-line utilities.
+## Project status
 
-> **Project status: Early development**
->
-> The repository currently contains the initial project structure and
-> documentation. The interface is not yet functional. Do not use it to
-> control hardware until the relevant features have been implemented
-> and tested.
+**Status: Early development**
+
+The project is transitioning from experimental Rofi and PySide6
+prototypes to a native KDE Plasma 6 Plasmoid.
+
+The previous prototypes are preserved in `archive/` for reference.
+
+The new interface and hardware integration are not yet implemented.
 
 ## Goals
 
-- Provide a simple Rofi-based interface.
-- Organize fan and keyboard controls into separate menus.
-- Offer fan monitoring and access to the existing fan profiles and controls.
-- Provide RGB keyboard presets, brightness and custom colors.
-- Keep user preferences and visual settings configurable.
-- Avoid implementing or duplicating the laptop's Embedded Controller protocol.
-- Keep the interface lightweight and suitable for Linux desktop environments.
+- Provide a native KDE Plasma system panel widget.
+- Offer a compact popup accessible directly from the Plasma panel.
+- Monitor CPU and GPU temperatures.
+- Display fan speed (RPM) and duty percentage.
+- Provide fan control and firmware automatic mode restoration.
+- Manage RGB keyboard power, brightness and colors.
+- Keep the interface lightweight and visually consistent with KDE.
+- Provide configurable application preferences.
 
-## Planned interface
+## Application design
 
-The main menu will provide three sections:
+The application will have three main sections:
 
 | Section | Purpose |
 |---|---|
-| Cooling | Fan monitoring and fan control |
-| RGB Keyboard | Backlight power, brightness and colors |
-| Settings | Appearance and application preferences |
+| Cooling | Temperature monitoring and fan control |
+| RGB Keyboard | Keyboard backlight management |
+| Settings | Application preferences and behavior |
 
-The visual theme will initially be based on a Tokyo Midnight-inspired
-dark palette.
+The popup will open directly on Cooling.
 
-## Architecture
+The system tray / Plasma panel icon will use a native KDE icon
+from the installed icon theme rather than a custom image.
 
-The application will use the existing command-line tools as its hardware
-backend:
 
-- `gfan` — fan status, monitoring and fan control.
-- `gkbd` — keyboard backlight status, color and brightness.
+## Technology
 
-The Rofi interface will invoke these utilities rather than communicating
-directly with the Embedded Controller (EC).
+### Interface
 
-This keeps hardware-specific operations and their safety checks within
-the original project.
+- KDE Plasma 6
+- QML
+- Qt Quick
+- Plasma Components
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for more details.
+### Hardware integration
 
-## Requirements
+- `gfan`
+- `gkbd`
+- Plasma-compatible command execution
 
-Planned runtime requirements:
+The QML interface will handle presentation, navigation and
+user interaction.
 
-- Linux
-- Bash
-- Rofi (Script Mode)
-- `gfan` and `gkbd` from the original `gigactl` project
+Hardware operations will be delegated to the existing
+command-line utilities.
 
-The exact dependency versions and installation instructions will be
-documented once the first working version is available.
+The initial implementation will investigate Plasma's
+`Plasma5Support.DataSource` as a command execution mechanism.
 
-The original `gigactl` utilities may have additional requirements depending
-on their version and operating mode.
+A separate Python backend is not required for the initial version.
+
+GigaControl will never implement its own Embedded Controller
+communication protocol.
+
 
 ## Hardware compatibility
 
-The original project documents the Gigabyte G6 KF as maintainer-verified
-and the Gigabyte G5 KF as reported working by a user.
+Initial development and testing are focused on a Gigabyte G5 KF.
 
-Hardware compatibility must not be assumed solely because the laptop
-belongs to the G5/G6 family.
+Current local testing:
 
-Development and testing are initially focused on a Gigabyte G5 KF.
+- Fan temperature readings: tested.
+- Fan duty readings: tested.
+- Fan RPM readings: tested.
+- RGB keyboard: preliminary operations tested successfully.
+- Manual fan speed writes: further validation required.
 
-Local test status:
+These observations do not establish official hardware compatibility.
 
-- Fan temperature, duty and RPM readings have been tested.
-- Manual fan speed changes still require deliberate validation.
-- Some RGB keyboard operations have been tried and appeared to work,
-  but full operation coverage and repeatability are not yet documented.
-- The Rofi interface is not implemented yet.
+See [docs/HARDWARE.md](docs/HARDWARE.md) for more information.
 
-These are local development observations, not maintainer-verified
-hardware compatibility claims. See
-[docs/HARDWARE.md](docs/HARDWARE.md) for the test matrix and details.
+## Original project
 
-Check the original project's documentation for its current compatibility
-information:
+GigaControl is an independent companion project for:
 
-https://github.com/smairio/gigactl
+[smairio/gigactl](https://github.com/smairio/gigactl)
 
-## Development
+It uses the original project's `gfan` and `gkbd` utilities
+as external hardware interfaces.
 
-Clone the repository:
+GigaControl is not an official Gigabyte application or an
+official component of the original project.
 
-```bash
-git clone https://github.com/YOUR_USERNAME/gigactl-rofi.git
-cd gigactl-rofi
+## Repository structure
+
+```text
+gigactl-rofi/
+├── archive/
+│   ├── rofi-prototype/
+│   └── pyside6-prototype/
+│
+├── docs/
+│
+├── plasma/
+│   └── package/
+│       ├── metadata.json
+│       └── contents/
+│           ├── config/
+│           │   └── main.xml
+│           └── ui/
+│               └── main.qml
+│
+├── tests/
+│
+├── .gitignore
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── LICENSE
+└── README.md
 ```
 
-Replace `YOUR_USERNAME` with the GitHub account that hosts the repository.
+The structure above describes the intended architecture.
+Some directories and components are still under development.
 
-The current development plan is:
+## Development environment
 
-1. Implement menu navigation without hardware actions.
-2. Add mock versions of `gfan` and `gkbd` for safe tests.
-3. Integrate fan monitoring and controls.
-4. Integrate keyboard backlight controls.
-5. Add persistent settings and installation scripts.
-6. Validate safety and hardware behavior.
+Initial development is being performed on:
+
+- Laptop: Gigabyte G5 KF
+- Operating system: CachyOS
+- Desktop environment: KDE Plasma 6
+
+Development will use Visual Studio Code.
 
 ## Safety
 
-This application interacts with utilities that can modify laptop hardware
-behavior.
+Hardware operations will remain delegated to the original
+`gfan` and `gkbd` utilities.
 
-- Never bypass hardware compatibility checks.
-- Do not implement direct EC writes in this project.
-- Do not invoke hardware commands through `eval`.
-- Do not silently change fan settings when opening the interface.
-- Preserve the original utilities' safety mechanisms.
-- Test application logic with mocks before testing on physical hardware.
+The application must preserve upstream safety checks and
+hardware compatibility restrictions.
 
-Use the original `gigactl` project for hardware-specific instructions,
-warnings and compatibility information.
+Monitoring should be read-only.
 
-## Relationship with gigactl
+Hardware changes must always be explicit user actions.
 
-`gigactl-rofi` is an independent interface project, not an official
-component of `smairio/gigactl`.
-
-The original `gigactl` project is distributed under the MIT License.
-This project does not currently copy or redistribute its source code;
-it invokes the installed command-line utilities as external programs.
-
-Original project:
-https://github.com/smairio/gigactl
+See [docs/SAFETY.md](docs/SAFETY.md).
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 only.
-See [LICENSE](LICENSE) for the complete license text.
+GigaControl is licensed under the GNU General Public License
+v3.0 only.
+
+See [LICENSE](LICENSE).

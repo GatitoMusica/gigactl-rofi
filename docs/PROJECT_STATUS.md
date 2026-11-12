@@ -1,204 +1,164 @@
-# GigaControl - Project Status
+# GigaControl — Project Status
 
 Last updated: 2026-11-12
 
-## 1. Project vision
+## 1. Project identity
 
-GigaControl is a lightweight desktop utility for managing fan
-monitoring, fan control and RGB keyboard backlighting on Gigabyte
-G-series laptops running Linux.
+Application name: GigaControl
 
-The main objective is to provide a permanently accessible system
-tray application in KDE Plasma.
+Repository: gigactl-rofi
 
-The user should be able to open a compact popup from the system tray
-and manage everything inside that single interface.
+Visibility: Public
 
-No external terminal windows should be required.
+License: GNU GPL-3.0-only
 
-## 2. Technology decision
+GigaControl is an independent KDE Plasma 6 widget for managing
+fan monitoring, fan control and RGB keyboard backlighting on
+supported Gigabyte laptops.
 
-The original Rofi-based interface was implemented as a navigation
-prototype.
+The repository is currently transitioning from experimental
+interfaces to a native Plasma 6 Plasmoid.
 
-The project direction has now changed:
+## 2. Current architecture
 
-- Python
-- PySide6 / Qt
-- QSystemTrayIcon
-- Custom QWidget popup
-- QTimer for periodic hardware monitoring
-- QSS for the Tokyo Midnight-inspired visual theme
+The selected application architecture is:
 
-Rofi remains a functional prototype, but Qt will be the target for
-the main application.
+- KDE Plasma 6
+- QML
+- Plasma Components
+- Existing `gfan` and `gkbd` command-line utilities
 
-Do not delete the existing prototype until its useful functionality
-has been transferred or deliberately archived.
+The system tray and popup will be managed natively by KDE Plasma.
 
-## 3. Intended application behavior
+A Python backend is not currently required for the initial version.
 
-### System tray
+The hardware integration mechanism is still to be validated.
 
-- Permanent tray icon by default.
-- Clicking the icon opens the control popup.
-- Clicking outside the popup hides it.
-- Closing the popup does not terminate the application.
-- Right-click menu provides Settings and Exit.
-- Application starts automatically after KDE login by default.
+## 3. Repository organization
 
-### Settings
+Previous prototypes have been moved to:
 
-Planned preferences:
+- `archive/rofi-prototype/`
+- `archive/pyside6-prototype/`
 
-- Start with system: ON by default.
-- Keep running in background: ON by default.
-- Show tray icon: ON by default.
-- Appearance and theme preferences.
+These are preserved for reference and are no longer the target
+application architecture.
 
-Autostart should eventually use XDG Autostart.
+The existing documentation, configuration and hardware tests
+remain under review.
 
-### Main popup
+## 4. Development environment
 
-The popup should open directly on Cooling.
+Development machine:
 
-Sections:
+- Laptop: Gigabyte G5 KF
+- Operating system: CachyOS
+- Desktop environment: KDE Plasma 6
+- IDE: Visual Studio Code
+- Shell: Fish
 
-1. Cooling
-2. RGB Keyboard
-3. Settings
+## 5. Hardware testing
 
-Cooling should expose live temperatures, fan RPM and duty readings,
-as well as fan controls.
+### Fan monitoring
 
-RGB Keyboard should expose power, brightness, presets and custom colors.
+The following operations have been tested successfully:
 
-## 4. Hardware backend
+- CPU temperature readings.
+- GPU temperature readings.
+- CPU fan duty readings.
+- GPU fan duty readings.
+- Fan RPM readings.
 
-The application will use the existing external utilities:
+Manual fan speed writes still require further validation.
 
-- gfan
-- gkbd
+### RGB keyboard
 
-Never implement direct EC communication in GigaControl.
+Some RGB keyboard operations have been tested manually
+on the development laptop.
 
-The original utilities must retain responsibility for hardware
-access, permissions, compatibility checks and safety mechanisms.
+Initial results have been successful, but complete operation
+coverage and repeatability have not yet been validated.
 
-## 5. Development hardware
+### Hardware backend
 
-Laptop: Gigabyte G5 KF
-Operating system: CachyOS
-Kernel recorded during initial testing: 7.3.1-1-cachyos
+The application will delegate hardware operations to:
 
-### Fan testing
+- `gfan`
+- `gkbd`
 
-- Temperature readings: tested successfully.
-- Fan duty readings: tested successfully.
-- Fan RPM readings: tested successfully.
-- Manual fan speed writes: pending further validation.
-
-### RGB testing
-
-- Some RGB keyboard operations have been tested manually.
-- Initial results appear successful.
-- Full operation coverage and repeatability remain to be validated.
+No independent EC communication protocol will be implemented.
 
 ## 6. Permissions and daemon status
 
-The original gigactl daemon is not installed.
+The original gigactl daemon is not installed on the
+development machine.
 
-D-Bus check:
-- Service: io.github.smairio.gigactl
-- NameHasOwner result: false
+The current utilities use direct EC access and request
+privileges through sudo.
 
-No gigactl systemd unit was found.
+A local sudoers rule has been configured to permit
+passwordless execution of `gfan` without arguments
+for read-only monitoring.
 
-The current gfan direct mode relaunches itself through sudo.
+This configuration is specific to the development machine.
 
-### Current read-only sudoers rule
+It must not be distributed as a general installation rule
+or included in the public repository.
 
-A local rule has been created:
+A secure authorization strategy for hardware write operations
+has not yet been selected.
 
-/etc/sudoers.d/gigactl-rofi-gfan-status
-
-It allows passwordless execution of:
-
-/usr/local/bin/gfan ""
-
-The rule was validated with visudo.
-
-The following command works without prompting for a password:
-
-sudo -n /usr/local/bin/gfan
-
-This authorization is limited to gfan without arguments.
-Do not extend permissions for fan writes or other operations without
-reviewing the security implications first.
-
-The gfan executable and shared library are owned by root:
-
-- /usr/local/bin/gfan
-- /usr/lib/gigactl/gigactl-cli-lib.sh
-
-Their containing directories are also root-owned.
-
-The current sudoers rule is local machine configuration and must
-never be committed to the public repository.
-
-## 7. Repository
-
-Repository: gigactl-rofi
-Visibility: Public
-License: GPL-3.0-only
-
-Original backend project:
-https://github.com/smairio/gigactl
-
-The original project uses MIT licensing.
-
-GigaControl is an independent companion frontend and currently
-uses the original utilities as external programs rather than
-copying their source code.
-
-The current repository name may need reconsideration because the
-main application is moving from Rofi to Qt.
-
-## 8. Completed work
+## 7. Completed work
 
 - Public GitHub repository created.
-- Local Git repository connected to GitHub.
 - GPL-3.0-only license added.
-- README and initial documentation created.
-- Architecture and safety documentation started.
-- Rofi navigation prototype implemented.
-- Cooling, RGB Keyboard and Settings menus implemented.
-- Tokyo Midnight initial theme created.
-- Search bar removed from the prototype.
-- Navigation prototype tested.
-- Initial fan telemetry tested on the G5 KF.
-- Restricted read-only sudoers authorization configured.
+- Initial project documentation created.
+- Rofi navigation prototype implemented and tested.
+- PySide6 desktop prototype implemented.
+- Both prototypes moved to the archive directory.
+- Project README updated for the Plasma 6 direction.
+- Architecture documentation rewritten.
+- Initial hardware monitoring tested on the G5 KF.
+- Read-only sudoers authorization configured locally.
 
-## 9. Next development steps
+## 8. Current development status
 
-1. Review current Git status and commit any pending prototype work.
-2. Decide whether to rename the repository to reflect the Qt application.
-3. Adapt the documentation to the new application architecture.
-4. Establish the Python and PySide6 project structure.
-5. Implement the system tray icon.
-6. Implement the popup attached to the tray icon.
-7. Implement Cooling live monitoring using safe read-only operations.
-8. Integrate RGB controls.
-9. Design and implement fan control with an appropriate permission model.
-10. Add XDG Autostart and persistent settings.
-11. Refine the Tokyo Midnight visual theme.
+The project is currently in the architecture transition stage.
 
-## 10. Important development principles
+The next implementation milestone is a minimal KDE Plasma 6
+Plasmoid that:
 
-- Everything must work inside one application interface.
-- No external terminal windows for normal operation.
-- Opening or closing the popup must never modify hardware state.
-- Monitoring must be read-only.
-- Hardware operations must be explicit user actions.
-- Never bypass upstream hardware safety checks.
-- Use mock commands for tests wherever possible.
+1. Appears in the Plasma widget selector.
+2. Uses a symbolic icon from the KDE icon theme.
+3. Opens a compact popup when activated.
+4. Provides the initial Cooling, RGB Keyboard and Settings
+   sections.
+
+No hardware operations will be connected until the basic
+widget installation and interaction have been validated.
+
+## 9. Next milestones
+
+1. Finalize repository organization.
+2. Validate the Plasma 6 development environment.
+3. Create the minimal Plasmoid package.
+4. Install and test the widget locally.
+5. Implement the main interface and navigation.
+6. Investigate safe hardware command integration.
+7. Implement read-only fan monitoring.
+8. Implement RGB keyboard controls.
+9. Design and validate safe fan control.
+10. Add persistent preferences and automatic startup.
+11. Refine the visual design.
+
+## 10. Development principles
+
+- Work incrementally, validating each milestone.
+- Keep the interface native to KDE Plasma.
+- Keep all normal interactions inside one popup.
+- Do not open external terminals for normal hardware operations.
+- Never modify hardware state when opening or closing the widget.
+- Keep monitoring read-only.
+- Require explicit user actions for hardware changes.
+- Preserve upstream hardware safety checks.
+- Test using mocks before physical hardware operations.

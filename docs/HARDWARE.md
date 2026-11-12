@@ -2,8 +2,8 @@
 
 ## Overview
 
-`gigactl-rofi` is designed as a frontend for the `gfan` and `gkbd`
-utilities from the original project:
+GigaControl is an independent KDE Plasma 6 frontend for the
+`gfan` and `gkbd` utilities supplied by the original project:
 
 https://github.com/smairio/gigactl
 
@@ -55,11 +55,53 @@ The following table records what has actually been tested locally.
 | Manual fan speed changes | Pending | Writes still require deliberate validation |
 | RGB keyboard control | Preliminary testing | Some operations have been tried and appeared to work |
 | RGB full test coverage | Pending | Individual operations and repeatability need documentation |
-| Rofi interface | Not implemented | Navigation and hardware integration are pending |
+| KDE Plasma 6 Plasmoid | Not implemented | Native widget and popup are not implemented yet |
 
 Preliminary RGB testing is encouraging, but it does not establish that
 every color, brightness level, power state, boot restore or suspend
 restore operation works reliably.
+
+
+## Local permissions and daemon status
+
+The development machine currently uses direct EC access mode.
+
+The original gigactl daemon is not installed.
+
+Local checks performed:
+
+- D-Bus service `io.github.smairio.gigactl`: not running.
+- No gigactl systemd unit was found.
+- `gfan` is installed under `/usr/local/bin`.
+- The shared library is installed under `/usr/lib/gigactl`.
+
+### Read-only authorization
+
+A local sudoers rule has been configured:
+
+`/etc/sudoers.d/gigactl-rofi-gfan-status`
+
+It allows passwordless execution of `gfan` without arguments.
+
+The following command has been tested successfully:
+
+`sudo -n /usr/local/bin/gfan`
+
+This authorization does not cover:
+
+- `gfan watch`
+- Manual fan speed changes.
+- Restoring automatic fan mode.
+- RGB keyboard operations through `gkbd`.
+
+This configuration is specific to the development machine.
+
+It must not be included in the public repository or distributed
+as a general installation rule.
+
+A secure authorization model for the final application
+remains to be designed.
+
 
 ## External utilities
 

@@ -1,210 +1,298 @@
 # Architecture
 
-## Overview
+## 1. Project overview
 
-`gigactl-rofi` is designed as a lightweight graphical frontend for the
-existing `gfan` and `gkbd` command-line utilities.
+GigaControl is a native KDE Plasma 6 widget designed to provide
+quick access to laptop fan monitoring, fan control and RGB keyboard
+backlight management.
 
-The application will use Rofi dmenu mode for menu presentation and
-navigation. Each screen is a separate Rofi invocation launched by Bash.
-Bash handles application flow, configuration and the invocation of
-external commands. Escape from a submenu returns to the main menu;
-Escape from the main menu exits the application.
+The application will be accessible through a symbolic icon in
+the KDE Plasma panel.
 
-The project will not implement the laptop's Embedded Controller protocol.
+Clicking the icon opens a compact popup containing the main
+application interface.
 
-## High-level data flow
+The project is an independent frontend for the existing
+`gfan` and `gkbd` command-line utilities.
+
+## 2. Architecture principles
+
+The application follows four main principles:
+
+- Native integration with KDE Plasma 6.
+- A single interface for all user interactions.
+- Reuse of existing hardware utilities.
+- Separation between presentation and hardware operations.
+
+The application must not implement its own Embedded Controller
+(EC) communication protocol.
+
+## 3. High-level architecture
 
 ```text
-                    User
-                     |
-                     v
-                Rofi interface
-                     |
-                     v
-                  main.sh
-                     |
-          +----------+----------+
-          |          |          |
-          v          v          v
-       cooling    keyboard   settings
-        module     module     module
-          |          |
-          +-----+----+
-                |
-                v
-          hardware.sh
-                |
-         +------+------+
-         |             |
-         v             v
-        gfan          gkbd
-         |             |
-         +------+------+
-                |
-                v
-       Original gigactl
-       hardware backend
-                |
-                v
-       Laptop Embedded
-        Controller (EC)
+                 KDE Plasma 6
+                      |
+                      v
+                GigaControl
+                  Plasmoid
+                      |
+             +--------+--------+
+             |                 |
+             v                 v
+       QML Interface      Application
+                          configuration
+             |
+             v
+         Hardware Bridge
+             |
+       Plasma5Support
+         DataSource
+             |
+       +-----+-----+
+       |           |
+       v           v
+      gfan        gkbd
+       |           |
+       +-----+-----+
+             |
+             v
+       Laptop hardware
+             |
+             v
+       Embedded Controller
 ```
 
-The diagram represents the intended architecture. Not all components
-have been implemented yet.
+This describes the initial implementation approach.
+The hardware communication layer may evolve if a more suitable
+Plasma 6 integration method becomes available.
 
-## Directory responsibilities
+## 4. Plasma widget structure
 
-### `src/main.sh`
+The application will be implemented as a Plasma 6 Plasmoid.
 
-Application entry point.
+Its package will contain:
+
+- `metadata.json`: widget identity, description and icon.
+- `contents/ui/main.qml`: main widget entry point.
+- Additional QML components for individual sections.
+- QML service components for hardware integration.
+
+The root QML element must be `PlasmoidItem`.
+
+### Compact representation
+
+The compact representation will display a symbolic icon
+provided by the KDE icon theme.
+
+The initial icon will be `utilities-system-monitor`.
+
+No custom image or logo is required for the panel icon.
+
+### Full representation
+
+The full representation will be the main GigaControl popup.
+
+It will contain three sections:
+
+1. Cooling
+2. RGB Keyboard
+3. Settings
+
+The popup will be managed by Plasma rather than by a
+separate desktop window.
+
+## 5. Interface components
+
+### Cooling
 
 Responsibilities:
 
-- Start the main menu.
-- Handle navigation between sections.
-- Dispatch selections to the appropriate module.
-- Preserve navigation state.
-- Handle application exit.
+- Display CPU temperature.
+- Display GPU temperature.
+- Display CPU fan RPM.
+- Display GPU fan RPM.
+- Display fan duty percentages.
+- Provide access to fan control profiles.
+- Provide manual fan speed controls.
+- Restore firmware automatic mode.
 
-### `src/modules/`
+Monitoring will use periodic read-only queries.
 
-Contains the individual menu sections.
+### RGB Keyboard
 
-- `cooling.sh`: fan monitoring and fan controls.
-- `keyboard.sh`: keyboard backlight controls.
-- `settings.sh`: visual and application preferences.
+Responsibilities:
 
-Each module should focus on its own interface and user actions.
+- Display keyboard backlight state.
+- Enable and disable keyboard lighting.
+- Adjust brightness.
+- Select predefined colors.
+- Set custom hexadecimal colors.
+- Restore the previously saved color.
 
-### `src/lib/`
+### Settings
 
-Contains reusable application functions.
+Responsibilities:
 
-- `common.sh`: shared utilities and validation.
-- `rofi.sh`: Rofi menu generation and interaction helpers.
-- `hardware.sh`: controlled invocation of the external hardware utilities.
+- Application preferences.
+- Startup behavior.
+- Background execution behavior.
+- Panel icon visibility.
+- Appearance and theme preferences.
 
-Hardware-specific communication must remain outside this library.
-The library must call `gfan` and `gkbd`, not reproduce their EC logic.
+The tray or panel icon should be enabled by default.
 
-### `src/themes/`
+Automatic startup after KDE login should also be enabled by default.
 
-Contains Rofi theme definitions.
+## 6. Hardware integration
 
-The initial theme will be `tokyo-midnight.rasi`.
-
-### `config/`
-
-Contains default application configuration:
-
-- `fans.conf`: fan-related interface preferences.
-- `colors.conf`: keyboard color presets.
-- `settings.conf`: general application settings.
-
-Machine-specific preferences should not be committed to the public
-repository.
-
-### `tests/`
-
-Contains tests for menu navigation and configuration handling.
-
-The `tests/mocks/` directory will provide mock implementations of
-`gfan` and `gkbd`, allowing application logic to be tested without
-changing hardware state.
-
-## Hardware integration
-
-The application will interact with the hardware exclusively through
-the installed command-line utilities:
+The application will reuse the external command-line utilities
+provided by the original project:
 
 - `gfan`
 - `gkbd`
 
-These tools are responsible for their own hardware checks, permissions,
-locking, daemon communication and EC operations.
+These utilities remain responsible for:
 
-The frontend must not:
+- Hardware model detection.
+- Embedded Controller access.
+- Hardware locking.
+- Permission handling.
+- Safety checks.
+- Communication with the original gigactl daemon,
+  when available.
 
-- Write directly to EC registers.
-- Invoke `ec_probe` to implement its own hardware protocol.
-- Bypass the original model checks.
-- Replace or weaken the safety checks provided by the original tools.
-- Assume that every version of the original tools has identical behavior.
+The frontend must never reproduce these mechanisms.
 
-The frontend should check that the required commands exist before
-attempting to use them.
+### Initial command integration
 
-## Rofi interaction model
+The first implementation will investigate using
+`Plasma5Support.DataSource` with the executable data engine.
 
-The intended interface uses Rofi dmenu mode.
+A dedicated QML hardware bridge will isolate command execution
+from the presentation layer.
 
-The application will separate:
+The bridge will:
 
-1. Menu rendering.
-2. Selection identification.
-3. Navigation state.
-4. Hardware action execution.
-5. Error reporting.
+- Invoke fixed, validated commands.
+- Execute operations asynchronously.
+- Capture standard output and error output.
+- Check exit status.
+- Report unavailable commands and permission failures.
+- Prevent overlapping monitoring requests.
 
-Menu entries should use stable internal identifiers rather than relying
-on their visible labels.
+Plasma5Support is a compatibility layer in Plasma 6.
+Its use will be isolated so it can be replaced without redesigning
+the complete interface if necessary.
 
-This allows labels and theme presentation to change without breaking
-the application's navigation logic.
+### Monitoring
 
-## Configuration
+Monitoring should use periodic read-only queries.
 
-Configuration will be separated from application logic.
+The initial target refresh interval is two seconds.
 
-Defaults will be stored in the repository under `config/`.
+A QML timer will schedule status requests and update the interface
+when new results become available.
 
-User-specific configuration will eventually be stored under:
+A long-running terminal process must not be required.
 
-```text
-~/.config/gigactl-rofi/
-```
+### Hardware control
 
-Application resources will eventually be installed under:
+Hardware changes must be explicit user actions.
 
-```text
-~/.local/share/gigactl-rofi/
-```
+The application must preserve the safety mechanisms of
+the original utilities.
 
-The command-line launcher will eventually be available under:
+Monitoring permissions must not automatically grant
+permission to modify fan speeds.
 
-```text
-~/.local/bin/
-```
+The initial read-only `sudoers` configuration is specific
+to the development machine and must not be assumed to exist
+on other installations.
 
-The development repository must remain separate from the installed
-application files.
+A secure authorization model for hardware writes remains
+to be designed.
 
-## Safety and error handling
+## 7. Technology stack
 
-Hardware operations must be explicit user actions.
+### Interface
 
-Opening a menu or navigating between sections must never change fan
-speeds, keyboard colors or brightness.
+- KDE Plasma 6
+- QML
+- Qt Quick
+- Plasma Components
 
-Before invoking a hardware command, the frontend should:
+### Hardware utilities
 
-- Verify that the required executable is available.
-- Validate the requested operation and its arguments.
-- Invoke the command without shell `eval`.
-- Capture the exit status and relevant error output.
-- Inform the user when the operation fails.
+- `gfan`
+- `gkbd`
 
-Tests should use mock commands by default. Real hardware tests must be
-performed separately and deliberately.
+### Development
 
-## Development stages
+- Visual Studio Code
+- Git
+- CachyOS
+- KDE Plasma 6
 
-1. Implement navigation and menu rendering.
-2. Test navigation with mock commands.
-3. Add read-only fan status and monitoring.
-4. Integrate fan control actions.
-5. Integrate keyboard backlight actions.
-6. Add user configuration and installation.
-7. Validate behavior and document hardware testing.
+A separate Python backend is not required in the initial
+implementation.
+
+It may be introduced later if the application requires
+a persistent service or more complex hardware coordination.
+
+## 8. Configuration
+
+User preferences will be stored separately from application code.
+
+The project will initially investigate Plasma's native
+configuration facilities.
+
+The configuration must not store:
+
+- Passwords.
+- Privileged credentials.
+- Sensitive authentication information.
+
+Machine-specific paths and settings should not be hardcoded
+when a configurable alternative is appropriate.
+
+## 9. Testing strategy
+
+Testing will be divided into independent areas.
+
+### Interface tests
+
+- Widget installation.
+- Panel icon visibility.
+- Popup opening and closing.
+- Navigation between sections.
+- Appearance and resizing behavior.
+
+### Hardware bridge tests
+
+- Command availability.
+- Standard output handling.
+- Error handling.
+- Exit status handling.
+- Invalid argument rejection.
+
+### Hardware tests
+
+Testing against physical hardware must be deliberate.
+
+Start with read-only monitoring before introducing
+fan or keyboard write operations.
+
+Mock commands should be used wherever possible.
+
+## 10. Future development
+
+1. Create and install a minimal Plasma 6 Plasmoid.
+2. Verify the symbolic panel icon and popup.
+3. Implement the main navigation.
+4. Implement the hardware bridge.
+5. Integrate read-only fan monitoring.
+6. Integrate RGB keyboard controls.
+7. Introduce safe fan control.
+8. Add persistent application preferences.
+9. Implement automatic startup.
+10. Refine the Tokyo Midnight visual design.

@@ -1,31 +1,70 @@
-# Editor files
+
+# ==========================================
+# IDE and editor files
+# ==========================================
+
 *~
 *.swp
 *.swo
 *.bak
-.vscode/
+
 .idea/
 
+# Keep shareable VS Code extension recommendations
+.vscode/*
+!.vscode/extensions.json
+
+# ==========================================
+# Python
+# ==========================================
+
+.venv/
+venv/
+env/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ==========================================
+# Qt / QML generated files
+# ==========================================
+
+*.qmlc
+*.jsc
+.qmlcache/
+
+# ==========================================
+# Build and test artifacts
+# ==========================================
+
+build/
+dist/
+coverage/
+
+# ==========================================
 # Temporary files and logs
+# ==========================================
+
 *.tmp
 *.log
 *.pid
 .cache/
 
-# Build and test artifacts
-build/
-dist/
-coverage/
-__pycache__/
-*.pyc
-
+# ==========================================
 # Local environment and private configuration
+# ==========================================
+
 .env
 .env.*
 !.env.example
-config/local.conf
-config/settings.local.conf
 
-# OS files
+*.local.conf
+
+# ==========================================
+# Operating system files
+# ==========================================
+
 .DS_Store
 Thumbs.db
+desktop.ini
