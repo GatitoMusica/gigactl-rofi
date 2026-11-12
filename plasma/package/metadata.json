@@ -1,0 +1,13 @@
+{
+    "KPlugin": {
+        "Id": "com.gigactl.control",
+        "Name": "GigaControl",
+        "Description": "Fan monitoring and RGB keyboard controls for Gigabyte laptops.",
+        "Icon": "utilities-system-monitor",
+        "Category": "System Information",
+        "Version": "0.1.0",
+        "License": "GPL-3.0-only"
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

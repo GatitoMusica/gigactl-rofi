@@ -123,33 +123,35 @@ has not yet been selected.
 
 ## 8. Current development status
 
-The project is currently in the architecture transition stage.
+The first native KDE Plasma 6 Plasmoid prototype has been
+successfully implemented and tested.
 
-The next implementation milestone is a minimal KDE Plasma 6
-Plasmoid that:
+Completed:
 
-1. Appears in the Plasma widget selector.
-2. Uses a symbolic icon from the KDE icon theme.
-3. Opens a compact popup when activated.
-4. Provides the initial Cooling, RGB Keyboard and Settings
-   sections.
+- Created the initial Plasma package structure.
+- Added valid widget metadata.
+- Implemented the initial QML entry point.
+- Validated the QML file with `qmllint`.
+- Tested the package using `plasmoidviewer`.
+- Installed the widget locally using `kpackagetool6`.
+- Registered GigaControl in the Plasma widget selector.
+- Added the widget to the KDE Plasma panel.
+- Verified popup opening and closing behavior.
 
-No hardware operations will be connected until the basic
-widget installation and interaction have been validated.
+The current interface only displays the initial GigaControl
+popup. Navigation and hardware integration are not implemented.
 
 ## 9. Next milestones
 
-1. Finalize repository organization.
-2. Validate the Plasma 6 development environment.
-3. Create the minimal Plasmoid package.
-4. Install and test the widget locally.
-5. Implement the main interface and navigation.
-6. Investigate safe hardware command integration.
-7. Implement read-only fan monitoring.
-8. Implement RGB keyboard controls.
-9. Design and validate safe fan control.
-10. Add persistent preferences and automatic startup.
-11. Refine the visual design.
+1. Implement navigation between Cooling, RGB Keyboard and Settings.
+2. Establish the visual foundations of the Tokyo Midnight theme.
+3. Validate the widget layout and behavior in Plasma.
+4. Investigate safe hardware command execution.
+5. Implement read-only fan monitoring.
+6. Implement RGB keyboard controls.
+7. Design and validate safe fan control.
+8. Add persistent preferences.
+9. Complete installation and release documentation.
 
 ## 10. Development principles
 
