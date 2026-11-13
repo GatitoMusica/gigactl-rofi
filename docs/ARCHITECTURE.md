@@ -295,4 +295,4 @@ Mock commands should be used wherever possible.
 7. Introduce safe fan control.
 8. Add persistent application preferences.
 9. Implement automatic startup.
-10. Refine the Tokyo Midnight visual design.
+10. Follow the active KDE Plasma color scheme throughout the interface.

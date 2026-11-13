@@ -144,7 +144,7 @@ popup. Navigation and hardware integration are not implemented.
 ## 9. Next milestones
 
 1. Implement navigation between Cooling, RGB Keyboard and Settings.
-2. Establish the visual foundations of the Tokyo Midnight theme.
+2. Implement native KDE Plasma theme integration.
 3. Validate the widget layout and behavior in Plasma.
 4. Investigate safe hardware command execution.
 5. Implement read-only fan monitoring.

@@ -35,7 +35,7 @@ The initial application behavior is:
 | Monitoring | Active only while the popup is open |
 | Refresh interval | 2000 milliseconds |
 | Monitoring while closed | Disabled |
-| Theme | Tokyo Midnight |
+| Theme | Active KDE Plasma color scheme |
 
 ## 4. Monitoring lifecycle
 

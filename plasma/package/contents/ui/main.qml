@@ -1,7 +1,7 @@
-
 import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
+import org.kde.kirigami as Kirigami
 
 PlasmoidItem {
     id: root
@@ -23,10 +23,14 @@ PlasmoidItem {
         Layout.preferredWidth: 390
         Layout.preferredHeight: 430
 
+        // Inherit the active KDE window color scheme
+        Kirigami.Theme.colorSet: Kirigami.Theme.Window
+        Kirigami.Theme.inherit: false
+
         // Background
         Rectangle {
             anchors.fill: parent
-            color: "#1a1b26"
+            color: Kirigami.Theme.backgroundColor
             radius: 12
         }
 
@@ -41,14 +45,14 @@ PlasmoidItem {
 
                 Text {
                     text: "GigaControl"
-                    color: "#bb9af7"
+                    color: Kirigami.Theme.textColor
                     font.pixelSize: 23
                     font.bold: true
                 }
 
                 Text {
                     text: "GIGABYTE G5 KF · SYSTEM CONTROL"
-                    color: "#7982a9"
+                    color: Kirigami.Theme.disabledTextColor
                     font.pixelSize: 9
                 }
             }
@@ -70,13 +74,13 @@ PlasmoidItem {
                         radius: 7
 
                         color: root.currentSection === index
-                               ? "#292e42"
+                               ? Kirigami.Theme.highlightColor
                                : "transparent"
 
                         border.width: root.currentSection === index
                                       ? 1 : 0
 
-                        border.color: "#414868"
+                        border.color: Kirigami.Theme.focusColor
 
                         Text {
                             anchors.centerIn: parent
@@ -84,8 +88,8 @@ PlasmoidItem {
                             text: modelData
 
                             color: root.currentSection === index
-                                   ? "#7aa2f7"
-                                   : "#a9b1d6"
+                                   ? Kirigami.Theme.highlightedTextColor
+                                   : Kirigami.Theme.textColor
 
                             font.pixelSize: 10
                         }
@@ -117,37 +121,37 @@ PlasmoidItem {
 
                         Text {
                             text: "Cooling"
-                            color: "#7aa2f7"
+                            color: Kirigami.Theme.textColor
                             font.pixelSize: 18
                             font.bold: true
                         }
 
                         Text {
                             text: "Monitor and manage your cooling system."
-                            color: "#7982a9"
+                            color: Kirigami.Theme.disabledTextColor
                             font.pixelSize: 11
                         }
 
                         Text {
                             text: "CPU Temperature: — °C"
-                            color: "#bb9af7"
+                            color: Kirigami.Theme.textColor
                             font.pixelSize: 15
                         }
 
                         Text {
                             text: "GPU Temperature: — °C"
-                            color: "#bb9af7"
+                            color: Kirigami.Theme.textColor
                             font.pixelSize: 15
                         }
 
                         Text {
                             text: "CPU Fan: — RPM"
-                            color: "#c0caf5"
+                            color: Kirigami.Theme.textColor
                         }
 
                         Text {
                             text: "GPU Fan: — RPM"
-                            color: "#c0caf5"
+                            color: Kirigami.Theme.textColor
                         }
 
                         Item {
@@ -164,20 +168,20 @@ PlasmoidItem {
 
                         Text {
                             text: "RGB Keyboard"
-                            color: "#7aa2f7"
+                            color: Kirigami.Theme.textColor
                             font.pixelSize: 18
                             font.bold: true
                         }
 
                         Text {
                             text: "Manage your keyboard backlight."
-                            color: "#7982a9"
+                            color: Kirigami.Theme.disabledTextColor
                             font.pixelSize: 11
                         }
 
                         Text {
                             text: "Keyboard controls will appear here."
-                            color: "#c0caf5"
+                            color: Kirigami.Theme.textColor
                         }
 
                         Item {
@@ -194,25 +198,25 @@ PlasmoidItem {
 
                         Text {
                             text: "Settings"
-                            color: "#7aa2f7"
+                            color: Kirigami.Theme.textColor
                             font.pixelSize: 18
                             font.bold: true
                         }
 
                         Text {
                             text: "Application preferences."
-                            color: "#7982a9"
+                            color: Kirigami.Theme.disabledTextColor
                             font.pixelSize: 11
                         }
 
                         Text {
                             text: "Appearance"
-                            color: "#c0caf5"
+                            color: Kirigami.Theme.textColor
                         }
 
                         Text {
                             text: "Monitoring"
-                            color: "#c0caf5"
+                            color: Kirigami.Theme.textColor
                         }
 
                         Item {
@@ -222,18 +226,19 @@ PlasmoidItem {
                 }
             }
 
-            // Footer
+            // Footer separator
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                color: "#343a55"
+                color: Kirigami.Theme.alternateBackgroundColor
             }
 
+            // Footer
             Text {
                 Layout.fillWidth: true
 
                 text: "GIGACONTROL · DEVELOPMENT BUILD"
-                color: "#565f89"
+                color: Kirigami.Theme.disabledTextColor
                 font.pixelSize: 9
                 horizontalAlignment: Text.AlignHCenter
             }

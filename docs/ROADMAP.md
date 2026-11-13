@@ -90,7 +90,8 @@ the original hardware safeguards.
 
 ## Phase 8 — Visual refinement
 
-- [ ] Refine Tokyo Midnight styling.
+- [ ] Adapt the interface to the active KDE Plasma color scheme.
+- [ ] Validate contrast, readability and visual consistency across different Plasma themes.
 - [ ] Improve layout and spacing.
 - [ ] Add useful visual indicators.
 - [ ] Validate different panel sizes and screen positions.
