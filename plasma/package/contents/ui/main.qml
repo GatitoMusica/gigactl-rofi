@@ -2,11 +2,10 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
 import org.kde.kirigami as Kirigami
+import org.kde.plasma.components 3.0 as PlasmaComponents
 
 PlasmoidItem {
     id: root
-
-    property int currentSection: 0
 
     // Widget identity
     Plasmoid.title: "GigaControl"
@@ -57,52 +56,22 @@ PlasmoidItem {
                 }
             }
 
-            // Navigation
-            RowLayout {
-                spacing: 6
+            //Navegation
+            PlasmaComponents.TabBar {
+                id: navigationBar
 
-                Repeater {
-                    model: ["Cooling", "RGB Keyboard", "Settings"]
+                Layout.fillWidth: true
 
-                    delegate: Rectangle {
-                        required property int index
-                        required property string modelData
+                PlasmaComponents.TabButton {
+                    text: "Cooling"
+                }
 
-                        Layout.fillWidth: true
-                        implicitHeight: 36
+                PlasmaComponents.TabButton {
+                    text: "RGB Keyboard"
+                }
 
-                        radius: 7
-
-                        color: root.currentSection === index
-                               ? Kirigami.Theme.highlightColor
-                               : "transparent"
-
-                        border.width: root.currentSection === index
-                                      ? 1 : 0
-
-                        border.color: Kirigami.Theme.focusColor
-
-                        Text {
-                            anchors.centerIn: parent
-
-                            text: modelData
-
-                            color: root.currentSection === index
-                                   ? Kirigami.Theme.highlightedTextColor
-                                   : Kirigami.Theme.textColor
-
-                            font.pixelSize: 10
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-
-                            onClicked: {
-                                root.currentSection = index
-                            }
-                        }
-                    }
+                PlasmaComponents.TabButton {
+                    text: "Settings"
                 }
             }
 
@@ -111,7 +80,7 @@ PlasmoidItem {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                currentIndex: root.currentSection
+                currentIndex: navigationBar.currentIndex
 
                 // Cooling
                 Item {
