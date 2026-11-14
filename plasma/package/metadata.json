@@ -3,7 +3,7 @@
         "Id": "com.gigactl.control",
         "Name": "GigaControl",
         "Description": "Fan monitoring and RGB keyboard controls for Gigabyte laptops.",
-        "Icon": "utilities-system-monitor",
+        "Icon": "io.github.smairio.gigactl-symbolic",
         "Category": "System Information",
         "Version": "0.1.0",
         "License": "GPL-3.0-only"

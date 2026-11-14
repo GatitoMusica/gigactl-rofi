@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to GigaControl will be documented in this file.
+All notable changes to GigaControl Plasma will be documented here.
 
 The format is based on Keep a Changelog.
 
@@ -8,30 +8,23 @@ The format is based on Keep a Changelog.
 
 ### Added
 
-- Initial public project structure.
-- GPL-3.0-only license.
-- Project documentation covering architecture, hardware compatibility,
-  safety, configuration and installation.
-- Initial Rofi navigation prototype.
-- Initial PySide6 desktop prototype.
-- Development hardware testing on Gigabyte G5 KF.
+- Native KDE Plasma 6 applet with Cooling, RGB Keyboard and Settings pages.
+- C++ QML plugin for telemetry and communication with gigactld over D-Bus.
+- Cooling telemetry, upstream fan profile selection, keyboard controls and
+  Turbo Boost control.
+- Plasma-themed symbolic icon, widget preferences and English user guide.
+- Source installation, hardware compatibility, architecture and safety docs.
 
 ### Changed
 
-- Transitioned the application architecture from Rofi and PySide6
-  to a native KDE Plasma 6 Plasmoid.
-- Selected QML and Plasma Components for the application interface.
-- Selected KDE's native symbolic icon system for panel integration.
-- Defined popup-based navigation with Cooling, RGB Keyboard and Settings.
-- Defined monitoring behavior: hardware polling runs only while
-  the popup is open.
-- Archived the previous Rofi and PySide6 prototypes.
+- Replaced the Rofi and PySide6 prototypes with the native Plasma applet.
+- Removed the old prototype files from the current source tree; their history
+  remains available in Git.
+- Renamed the GitHub repository from gigactl-rofi to gigactl-plasma to
+  match the native Plasma 6 frontend.
 
 ### Security
 
-- Documented hardware access restrictions and local development
-  permissions.
-- Established that hardware operations must continue to use
-  the original `gfan` and `gkbd` utilities.
-- Defined the requirement for explicit user actions before
-  modifying hardware state.
+- Kept hardware access and safety policy in the upstream gigactld project.
+- Made monitoring read-only and hardware changes explicit user actions.
+- Documented possible conflicts with other Turbo Boost controls.

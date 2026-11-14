@@ -1,132 +1,50 @@
-# Contributing to GigaControl
+# Contributing to GigaControl Plasma
 
-Thank you for your interest in contributing to GigaControl!
+GigaControl Plasma is a native KDE Plasma 6 frontend for the upstream
+gigactld daemon. Contributions, bug reports and hardware reports are welcome.
 
-GigaControl is an independent, community-oriented project
-focused on providing a native KDE Plasma interface for
-Gigabyte laptop fan and RGB keyboard management.
+## Development setup
 
-Contributions, bug reports and suggestions are welcome.
+The project uses QML, Qt 6 and a C++ QML plugin. Build requirements are
+documented in [Installation](docs/INSTALLATION.md). A local build can be
+configured and installed with:
 
-## 1. Before contributing
+    cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$HOME/.local"
+    cmake --build build
+    cmake --install build
 
-Before starting substantial work:
+The upstream gigactld service and gfan command are needed for live hardware
+interaction. UI and build work should be possible without changing hardware.
 
-- Check existing issues and discussions.
-- Avoid duplicating ongoing work.
-- Discuss significant architectural changes before implementing them.
-- Keep changes focused and independently reviewable.
+## Guidelines
 
-## 2. Development environment
+- Keep QML presentation separate from daemon and telemetry code.
+- Use the upstream D-Bus API for fan profiles, keyboard controls and Turbo
+  Boost.
+- Use the upstream gfan utility for telemetry.
+- Do not implement an EC protocol, direct register access or a second hardware
+  authorization path.
+- Preserve upstream safety checks and report errors clearly.
+- Keep changes focused and avoid generated build files or local configuration.
+- Add tests for new behavior when practical.
 
-The project targets:
+## Validation
 
-- Linux
-- KDE Plasma 6
-- QML
-- Qt 6
-- Existing `gfan` and `gkbd` utilities
+Choose checks that match the change:
 
-Visual Studio Code is the recommended development environment.
+- Build the C++ QML module.
+- Validate QML and inspect the applet in Plasma.
+- Test daemon communication with a mock or test service when available.
+- Use live hardware only for a specific, controlled check, and state what was
+  tested.
 
-## 3. Code guidelines
+Never present one laptop's result as support for every model. Hardware reports
+should include the laptop model, operating system, Plasma version, GigaControl
+revision, steps taken and relevant non-sensitive errors.
 
-### QML
+## Pull requests
 
-- Keep interface components modular.
-- Separate presentation from hardware operations.
-- Prefer reusable components.
-- Avoid unnecessary dependencies.
-- Follow KDE Plasma conventions where possible.
-
-### Hardware integration
-
-- Reuse the original `gfan` and `gkbd` utilities.
-- Never implement independent EC communication.
-- Preserve upstream safety checks.
-- Validate command arguments.
-- Handle errors explicitly.
-- Never introduce unrestricted privileged execution.
-
-### General development
-
-- Keep changes small and understandable.
-- Document non-obvious behavior.
-- Avoid committing generated files and local configuration.
-- Include tests when introducing new functionality.
-
-## 4. Testing
-
-Contributions should be tested before submission.
-
-Depending on the changes, testing may include:
-
-- QML validation.
-- Plasmoid installation and interaction.
-- Mock-based hardware command tests.
-- Read-only hardware monitoring.
-- Regression testing.
-
-Never use physical hardware as the only testing environment.
-
-## 5. Reporting issues
-
-When reporting a problem, include:
-
-- Operating system and version.
-- KDE Plasma version.
-- Laptop model.
-- Relevant GigaControl version or commit.
-- Steps to reproduce the issue.
-- Relevant error messages or logs.
-
-Do not include passwords, authentication information
-or other sensitive system data.
-
-## 6. Pull requests
-
-Pull requests should:
-
-- Explain the purpose of the change.
-- Describe relevant implementation decisions.
-- Identify affected components.
-- Include testing information.
-- Avoid unrelated changes.
-
-Architectural changes should be discussed before implementation.
-
-## 7. Hardware compatibility reports
-
-Hardware compatibility reports are particularly valuable.
-
-Please distinguish between:
-
-- Maintainer-verified hardware.
-- User-reported compatibility.
-- Hardware that has not been tested.
-
-Include hardware and software details when reporting
-successful or unsuccessful operations.
-
-## 8. Licensing
-
-By submitting a contribution, you agree that your contribution
-will be distributed under the project's GNU General Public
-License v3.0 only.
-
-Ensure that contributed code and resources are compatible
-with the project's licensing requirements.
-
-Third-party code and assets must be properly attributed.
-
-## 9. Project philosophy
-
-GigaControl aims to remain:
-
-- Lightweight.
-- Accessible.
-- Open source.
-- Maintainable.
-- Safe when interacting with hardware.
-
-Contributions should support these principles.
+Describe the change, affected components, validation performed and any hardware
+involved. Keep unrelated changes separate. Ensure contributed code and assets
+are compatible with GNU GPL-3.0-only and provide attribution for third-party
+materials.

@@ -1,166 +1,83 @@
-# GigaControl
+# GigaControl Plasma
 
-A native KDE Plasma 6 widget for monitoring and managing fan
-performance and RGB keyboard backlighting on supported
-Gigabyte laptops.
+GigaControl Plasma is a KDE Plasma 6 widget for monitoring cooling and
+controlling supported Gigabyte laptop features through the upstream
+[gigactld](https://github.com/smairio/gigactl) daemon.
 
-GigaControl provides a compact, permanently accessible interface
-through the KDE Plasma panel.
+The widget is called **GigaControl** in Plasma. The **GigaControl Plasma**
+project name distinguishes this frontend from the upstream daemon and CLI
+project. The GitHub repository is GatitoMusica/gigactl-plasma.
 
-## Project status
+## What it provides
 
-**Status: Early development**
+- **Cooling:** CPU/GPU temperatures, fan RPM and duty, and upstream fan profile
+  selection (Silent, Balanced, Performance, Maximum and Auto/firmware).
+- **RGB Keyboard:** power, brightness and color controls.
+- **Settings:** Turbo Boost, temperature units, monitoring interval, daemon
+  information and a link to the built-in user guide.
 
-The project is transitioning from experimental Rofi and PySide6
-prototypes to a native KDE Plasma 6 Plasmoid.
+The popup uses the active Plasma colors. Hardware controls are disabled when
+gigactld is unavailable. Turbo Boost may be changed by other CPU management
+software; the Settings page explains this limitation.
 
-The previous prototypes are preserved in `archive/` for reference.
+## Architecture
 
-The new interface and hardware integration are not yet implemented.
+This repository contains the Plasma interface and its C++ QML plugin. The
+plugin reads telemetry with the upstream gfan command and communicates with
+gigactld over the system D-Bus for fan profiles, keyboard controls and Turbo
+Boost. GigaControl does not implement an EC protocol; the upstream project
+owns hardware access and its safety checks.
 
-## Goals
+The daemon and its CLI are maintained separately in
+[smairio/gigactl](https://github.com/smairio/gigactl). Install and enable
+gigactld before using the widget.
 
-- Provide a native KDE Plasma system panel widget.
-- Offer a compact popup accessible directly from the Plasma panel.
-- Monitor CPU and GPU temperatures.
-- Display fan speed (RPM) and duty percentage.
-- Provide fan control and firmware automatic mode restoration.
-- Manage RGB keyboard power, brightness and colors.
-- Keep the interface lightweight and visually consistent with KDE.
-- Provide configurable application preferences.
+## Compatibility and testing
 
-## Application design
+Development and interactive testing use a Gigabyte G5 KF running CachyOS and
+KDE Plasma 6. Cooling telemetry, fan profile selection, keyboard color and
+brightness controls, keyboard power, and the Turbo Boost switch have been
+tried through the widget on that system. This does not establish compatibility
+with every G5 KF configuration or other laptop models.
 
-The application will have three main sections:
+See [Hardware compatibility](docs/HARDWARE.md) and the upstream project for
+the current hardware support status.
 
-| Section | Purpose |
-|---|---|
-| Cooling | Temperature monitoring and fan control |
-| RGB Keyboard | Keyboard backlight management |
-| Settings | Application preferences and behavior |
+## Build and install from source
 
-The popup will open directly on Cooling.
+There is not yet a distro package or a published release artifact. A local
+user installation can be built with CMake. Requirements:
 
-The system tray / Plasma panel icon will use a native KDE icon
-from the installed icon theme rather than a custom image.
+- KDE Plasma 6 and its development CMake files
+- CMake 3.20 or newer and a C++17 compiler
+- ECM 6.0 or newer
+- Qt 6.5 or newer with Core, QML and D-Bus development components
+- gigactld and the upstream gfan command at runtime
 
+From the repository root:
 
-## Technology
+    cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$HOME/.local"
+    cmake --build build
+    cmake --install build
 
-### Interface
+Then add **GigaControl** from Plasma's widget selector. The daemon and its
+system integration are installed separately from the upstream project; this
+build does not install a system service or change system permissions.
 
-- KDE Plasma 6
-- QML
-- Qt Quick
-- Plasma Components
+The CMake installation prefix can be changed when needed. Keep the same prefix
+for configure, build and install so Plasma can find the QML plugin and widget.
 
-### Hardware integration
+## Repository layout
 
-- `gfan`
-- `gkbd`
-- Plasma-compatible command execution
-
-The QML interface will handle presentation, navigation and
-user interaction.
-
-Hardware operations will be delegated to the existing
-command-line utilities.
-
-The initial implementation will investigate Plasma's
-`Plasma5Support.DataSource` as a command execution mechanism.
-
-A separate Python backend is not required for the initial version.
-
-GigaControl will never implement its own Embedded Controller
-communication protocol.
-
-
-## Hardware compatibility
-
-Initial development and testing are focused on a Gigabyte G5 KF.
-
-Current local testing:
-
-- Fan temperature readings: tested.
-- Fan duty readings: tested.
-- Fan RPM readings: tested.
-- RGB keyboard: preliminary operations tested successfully.
-- Manual fan speed writes: further validation required.
-
-These observations do not establish official hardware compatibility.
-
-See [docs/HARDWARE.md](docs/HARDWARE.md) for more information.
-
-## Original project
-
-GigaControl is an independent companion project for:
-
-[smairio/gigactl](https://github.com/smairio/gigactl)
-
-It uses the original project's `gfan` and `gkbd` utilities
-as external hardware interfaces.
-
-GigaControl is not an official Gigabyte application or an
-official component of the original project.
-
-## Repository structure
-
-```text
-gigactl-rofi/
-├── archive/
-│   ├── rofi-prototype/
-│   └── pyside6-prototype/
-│
-├── docs/
-│
-├── plasma/
-│   └── package/
-│       ├── metadata.json
-│       └── contents/
-│           ├── config/
-│           │   └── main.xml
-│           └── ui/
-│               └── main.qml
-│
-├── tests/
-│
-├── .gitignore
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── LICENSE
-└── README.md
-```
-
-The structure above describes the intended architecture.
-Some directories and components are still under development.
-
-## Development environment
-
-Initial development is being performed on:
-
-- Laptop: Gigabyte G5 KF
-- Operating system: CachyOS
-- Desktop environment: KDE Plasma 6
-
-Development will use Visual Studio Code.
-
-## Safety
-
-Hardware operations will remain delegated to the original
-`gfan` and `gkbd` utilities.
-
-The application must preserve upstream safety checks and
-hardware compatibility restrictions.
-
-Monitoring should be read-only.
-
-Hardware changes must always be explicit user actions.
-
-See [docs/SAFETY.md](docs/SAFETY.md).
+    gigactl-plasma/
+    ├── docs/                         Project, installation and safety docs
+    ├── plasma/package/               Widget, settings, icon and user guide
+    ├── plugin/                       C++ QML plugin and D-Bus client
+    ├── CMakeLists.txt                Build and install configuration
+    ├── CHANGELOG.md
+    ├── CONTRIBUTING.md
+    └── LICENSE
 
 ## License
 
-GigaControl is licensed under the GNU General Public License
-v3.0 only.
-
-See [LICENSE](LICENSE).
+GigaControl Plasma is licensed under GNU GPL-3.0-only. See [LICENSE](LICENSE).
